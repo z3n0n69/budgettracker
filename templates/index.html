@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Tracker - Welcome</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+<body>
+  <div class="welcome-container">
+    <div class="welcome-box">
+      <h1>Welcome to Budget Tracker</h1>
+      <p>Manage your money smarter. Log in to continue or create a new account.</p>
+      <div class="button-group">
+        <a href="/loginpage" class="btn">Login</a>
+        <a href="/signuppage" class="btn btn-secondary">Create Account</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

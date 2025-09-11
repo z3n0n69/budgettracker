@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <!-- Optionally add icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>Budget Tracker</h2>
+            <ul>
+                <li><i class="fa-solid fa-user"></i> Profile</li>
+                <li><i class="fa-solid fa-wallet"></i> Balance</li>
+                <li><i class="fa-solid fa-receipt"></i> Expenses</li>
+                <li><i class="fa-solid fa-plus-minus"></i> Add/Remove</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="card username-container">
+                <p>Username goes here</p>
+            </div>
+
+            <div class="card currentmoney-container">
+                <p>Current money goes here</p>
+            </div>
+
+            <div class="card expenses-container">
+                <p>Expenses go here</p>
+            </div>
+
+            <div class="card addremove-container">
+                <form>
+                    <p>Add or remove expenses</p>
+                    <select name="add/remove">
+                        <option value="add">Add</option>
+                        <option value="remove">Remove</option>
+                    </select>
+                    <button>Select</button>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

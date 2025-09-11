@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <!-- Optionally add icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Budget Tracker</h1>
+            <form action = "/submitlogin" method="post">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" placeholder="Username" required name = "username">
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <p class="signup-text">Not registered? <a href="/loginpage">Create user here</a></p>
+            
+        </div>
+    </div>
+</body>
+</html>

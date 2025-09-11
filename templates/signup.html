@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Tracker - Register</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
+  <!-- Optional icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="register-container">
+    <div class="register-box">
+      <h1>Create User</h1>
+      <form action = "/createuser">
+        <div class="input-group">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" placeholder="Username" required>
+        </div>
+        <button type="submit">Register</button>
+      </form>
+      <p class="login-text">Already have an account? <a href="/loginpage">Login here</a></p>
+    </div>
+  </div>
+</body>
+</html>
