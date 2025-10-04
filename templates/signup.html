@@ -12,10 +12,10 @@
   <div class="register-container">
     <div class="register-box">
       <h1>Create User</h1>
-      <form action = "/createuser">
+      <form action = "/createuser" method="post">
         <div class="input-group">
           <i class="fa-solid fa-user"></i>
-          <input type="text" placeholder="Username" required>
+          <input type="text" placeholder="Username" required name = "username">
         </div>
         <button type="submit">Register</button>
       </form>
