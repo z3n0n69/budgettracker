@@ -148,6 +148,13 @@ def render_dashboard():
     return render_template('dashboard.html')
 
 
+
+@app.route('/add_money', methods = ['POST'])
+
+def add_money():
+    pass
+
+
 @app.route('/addremove_expense', methods = ['POST']) #to add an expense 
 
 def addremove_expense():
@@ -174,6 +181,10 @@ def addremove_expense():
             return redirect("dashboard")
     else: 
         return "error occured"
+
+
+
+
 
 @app.route("/fetch_balance", methods = ['GET']) #get updates from the money database
 
