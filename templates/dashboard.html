@@ -10,7 +10,7 @@
 <body>
 
   <!--
-    WORK IN THE ADD MONEY FEATURE
+    WORK IN THE SCHEDULE FEATURE
   -->
   <div class="dashboard">
     <!-- Sidebar -->
@@ -18,9 +18,7 @@
       <h2>Budget Tracker</h2>
       <ul>
         <li><i class="fa-solid fa-user"></i> Profile</li>
-        <li><i class="fa-solid fa-wallet"></i> Balance</li>
-        <li><i class="fa-solid fa-receipt"></i> Expenses</li>
-        <li><i class="fa-solid fa-plus-minus"></i> Add/Remove</li>
+        <li onclick = "window.location.href = '/schedule'"><i class="fa-solid fa-receipt"></i> Schedule</li>
         <li onclick = "window.location.href = '/loginpage'"><i class="fa-solid fa-user"></i> Logout</li>
       </ul>
     </aside>
@@ -31,14 +29,15 @@
       <div class="card profile-card">
         <h3><i class="fa-solid fa-user"></i> Profile</h3>
         <p>Username: <strong><span id = "displayusername">Null</span></strong></p>
-        <p>Email: johndoe@email.com</p>
+        <p>Email: test@test.com</p>
       </div>
 
       <!-- Balance and Expenses in a row -->
       <div class="card-row">
         <div class="card balance-card">
           <h3><i class="fa-solid fa-wallet"></i> Balance</h3>
-          <p><span id = "currentbalance">$0</span></p>
+          <p>Current Balance: <span id = "currentbalance">$0</span></p>
+          <p>Expected Balance: <span id = "expectedbalance">$0</span></p>
         </div>
 
         <div class="card expenses-card">
@@ -80,7 +79,7 @@
               <option value="add">Add</option>
             </select>
             <input type="text" placeholder="Add money description" required>
-            <input type="number" placeholder="Amount" required>
+            <input type="number" placeholder="Amount" name = "input_money"required>
           </div>
           <!-- Buttons aligned to side -->
           <div class="form-actions">

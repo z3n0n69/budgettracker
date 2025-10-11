@@ -1,5 +1,5 @@
 
-# WORK IN THE @add_money 
+# WORKING ON MONTHLY SCHEDULE PAYMENTS
 
 
 from flask import Flask, render_template, request, jsonify, redirect, make_response
@@ -13,7 +13,7 @@ from waitress import serve
 users = "users"
 expenses = "expenses"
 money = "money"
-
+scheduledpayments = "scheduledpayments"
 
 #database connection 
 try:
@@ -30,7 +30,7 @@ except mysql.connector.Error as error:
 dbcursor = mydb.cursor() 
 
 
-class myDB:
+class myDB: 
     def __init__(self, table):
         self.table = table 
 
@@ -43,7 +43,12 @@ class myDB:
         dbcursor.execute(f"SELECT * FROM {self.table} WHERE username = \"{username}\"" ,)
         results = dbcursor.fetchall()
         return results
-
+    
+    def fetch_scheduledpayments(self, username):
+        dbcursor.execute(f"SELECT * FROM {self.table} WHERE username = %s" , (username, ))
+        results = dbcursor.fetchall()
+        return results
+    
     
     def add_usernametoDB(self, username): #for register page
         dbcursor.execute(f"SELECT MAX(ID) FROM {users}")
@@ -53,14 +58,14 @@ class myDB:
         if userid_checker == None and moneyid_checker == None: 
             userid = 1
             dbcursor.execute(f"INSERT INTO {users} (ID, username) VALUES (%s, %s)", (userid , username))
-            dbcursor.execute(f"INSERT INTO {money} (ID, username, money) VALUES (%s,%s, 0)", (userid, username))
+            dbcursor.execute(f"INSERT INTO {money} (ID, username, balance) VALUES (%s,%s, 0)", (userid, username))
             mydb.commit()
             return f"success with userid = {userid} [add_username() if statement]"
         else:
             userid = userid_checker
             userid += 1 
             dbcursor.execute(f"INSERT INTO {users} (ID, username) VALUES (%s, %s)", (userid , username))
-            dbcursor.execute(f"INSERT INTO {money} (ID, username, money) VALUES (%s,%s, 0)", (userid, username))
+            dbcursor.execute(f"INSERT INTO {money} (ID, username, balance) VALUES (%s,%s, 0)", (userid, username))
             mydb.commit()
             return f"success with userid = {userid} [add_username() else statement]"
         
@@ -78,12 +83,23 @@ class myDB:
             dbcursor.execute(f"INSERT INTO {expenses} (username,transaction_ID, transaction_name, amount) VALUES (%s, %s, %s, %s)", (usernamecookie,transactionID_count,input_expense_name, input_expense_amount))
             mydb.commit()
     
+    def add_moneytoDB(self, username,amount):
+        dbcursor.execute(f"SELECT balance FROM {money} WHERE username = %s", (username,))
+        currentbalance = dbcursor.fetchone()[0]
+        print(type(currentbalance), type(amount))
+        setbalance = currentbalance + amount 
+        dbcursor.execute(f"UPDATE {money} SET balance = %s WHERE username = %s", (setbalance, username))
+        mydb.commit()
+
     def remove_expensetoDB(self, transactionID):
         dbcursor.execute(f"DELETE FROM {self.table} WHERE transaction_ID = %s", (transactionID,)) 
         mydb.commit() 
-        
+    
+    def add_schedulepaymentstoDB(self, username, schedulename, scheduleamount, scheduledate):
+        dbcursor.execute(f"INSERT INTO {self.table}(username,schedulename,scheduleamount,scheduledate) VALUES (%s,%s,%s,%s)" (username,schedulename, scheduleamount,scheduledate))
+        mydb.commit() 
 
-            
+        
             
 
 
@@ -108,6 +124,17 @@ def loginpage():
 
 def signuppage():
     return render_template('signup.html')
+
+
+@app.route('/dashboard')  #dashboard
+
+def render_dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/schedule')
+
+def render_schedule(): 
+    return render_template('schedule.html')
 
 
 
@@ -142,17 +169,16 @@ def validateLogin():
         return f"No {submittedusername} in the database"
     
 
-@app.route('/dashboard')  #dashboard
-
-def render_dashboard():
-    return render_template('dashboard.html')
-
-
 
 @app.route('/add_money', methods = ['POST'])
 
 def add_money():
-    pass
+    username_cookie = request.cookies.get("username")
+    input_money = int(request.form.get("input_money"))
+    dbrequest = myDB(money) 
+    dbrequest.add_moneytoDB(username_cookie, input_money)
+    return redirect("/dashboard")
+
 
 
 @app.route('/addremove_expense', methods = ['POST']) #to add an expense 
@@ -185,6 +211,18 @@ def addremove_expense():
 
 
 
+@app.route('/addschedule', methods = ['POST'])
+
+def add_schedule(): 
+    print("adding a schedule")
+    username_cookie = request.cookies.get('username')
+    schedname = request.form.get('name')
+    schedamount = request.form.get('amount')
+    scheddate = request.form.get('duedate')
+    dbrequest = myDB(scheduledpayments)
+    dbrequest.add_schedulepaymentstoDB(username_cookie, schedname,schedamount,scheddate)
+    print(username_cookie, schedname, schedamount, scheddate)
+    return redirect('/schedule')
 
 @app.route("/fetch_balance", methods = ['GET']) #get updates from the money database
 
@@ -222,6 +260,30 @@ def fetch_expenses():
         })
     return jsonify(expense_list)
 
+@app.route("/fetch_schedule" , methods = ['GET'])
+
+def fetch_schedule():
+    print("fetching scheduled payments...")
+    username_cookie = request.cookies.get('username')
+    dbrequest = myDB(scheduledpayments)
+    
+    result = dbrequest.fetch_scheduledpayments(username_cookie)
+    return result
+    
+
+
+
+@app.route("/form_testing", methods = ['POST']) #testing ground 
+
+def form_testing(): 
+    username_cookie = request.cookies.get('username')
+    schedname = request.form.get('name')
+    schedamount = request.form.get('amount')
+    scheddate = request.form.get('duedate')
+
+    print(username_cookie, schedname,schedamount,scheddate)
+
+    return redirect('/schedule')
 
 if __name__ == '__main__':
     app.run(debug = True, host = '0.0.0.0')
