@@ -25,7 +25,7 @@
         <h3><i class="fa-solid fa-calendar-days"></i> Monthly Payment Schedule</h3>
         
         <!-- Add schedule form -->
-        <form id="scheduleForm" action="/form_testing" method="post">
+        <form id="scheduleForm" action="/addschedule" method="post">
           <div class="form-group">
             <input type="text" name="name" placeholder="Payment name (e.g. Rent, Netflix)" required>
             <input type="number" name="amount" placeholder="Amount" required>
@@ -44,6 +44,7 @@
       </div>
     </main>
   </div>
+  <script src="{{ url_for('static', filename='schedule.js') }}"></script>
 
   
 </body>

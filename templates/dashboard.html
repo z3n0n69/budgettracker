@@ -19,7 +19,7 @@
       <ul>
         <li><i class="fa-solid fa-user"></i> Profile</li>
         <li onclick = "window.location.href = '/schedule'"><i class="fa-solid fa-receipt"></i> Schedule</li>
-        <li onclick = "window.location.href = '/loginpage'"><i class="fa-solid fa-user"></i> Logout</li>
+        <li onclick = "window.location.href = '/logout'"><i class="fa-solid fa-user"></i> Logout</li>
       </ul>
     </aside>
 
@@ -73,10 +73,11 @@
 
         <br>
         <!--Add salary-->
-        <form id = "addmoney" action = "/add_money" method = "post">
+        <form id = "addmoney" action = "/addremove_money" method = "post">
           <div class="form-group">
             <select name="addremove">
               <option value="add">Add</option>
+              <option value="remove">Remove</option>
             </select>
             <input type="text" placeholder="Add money description" required>
             <input type="number" placeholder="Amount" name = "input_money"required>

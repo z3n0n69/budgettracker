@@ -48,7 +48,6 @@ function get_expenses() {
     .then(data => {
       const container = document.getElementById("expenseDisplay");
       container.innerHTML = ""; // clear old content
-
       data.forEach(item => {
         // create a new element for each expense
         const div = document.createElement("div");
