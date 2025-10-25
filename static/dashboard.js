@@ -66,7 +66,7 @@ function get_money() {
 
       data.forEach(item => {
         // change value in the current balance
-        container.innerHTML = item.money; 
+        container.innerHTML = "₱"+item.money; 
       });
     })
 }

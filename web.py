@@ -89,12 +89,32 @@ class dbfunctions:
             dbcursor.execute(f"DELETE FROM expenses WHERE transaction_id = %s", (int(transactionid), ))
             mydb.commit()
             return "deleted"
-    def add_money(self, userID, username, balance):
-        dbcursor.execute(f"INSERT INTO money (userID, username, balance) VALUES(%s,%s,%s)"(userID, username, balance))
-        mydb.commit()
-        #gonna work with this one later
+    def addremove_money(self, userID, username, balance, option):
+        if option == "add":
+            dbcursor.execute(f"INSERT INTO money (userID, username, balance) VALUES(%s,%s,%s)",(userID, username, balance))
+            mydb.commit()
+        elif option == "remove":
+            balance = 0 - balance 
+            dbcursor.execute(f"INSERT INTO money (userID, username, balance) VALUES (%s,%s,%s)",(userID, username, balance))
+            mydb.commit()
 
+#GET REQUEST
 
+class fetchdb:
+    def __init__(self, username):
+        self.username = username
+    
+    def expenses(self):
+        dbcursor.execute(f"SELECT * FROM expenses WHERE username = %s", (self.username, ))
+        fetch_result = dbcursor.fetchall()
+        print(fetch_result)
+        return fetch_result
+
+    def money(self):
+        dbcursor.execute(f"SELECT balance FROM money WHERE username = %s", (self.username,)) 
+        fetch_result = dbcursor.fetchall()
+        return fetch_result   
+        
 
 # =====================================
 # FLASK APPLICATION
@@ -167,10 +187,12 @@ def submitlogin():
 def logout():
     return redirect('/')
 
-
+@app.route('/schedule')
+def schedulepage():
+    return render_template('schedule.html')
 
 # =====================================
-# PAGE FUNCTIONS
+# POST REQUEST
 # ===================================== 
 
 @app.route('/addremove_expense', methods = ['POST'])
@@ -203,12 +225,51 @@ def addremove_expense():
 @app.route('/addremove_money', methods = ['POST'])
 
 def addremove_money(): 
-    pass
+    user = request.cookies.get('username')
+    userid = int(request.cookies.get('userID'))
+    input_balance = int(request.form.get('input_money'))
+    option = request.form.get('addremove')
+
+    dbrequest = dbfunctions(user)
+    dbrequest.addremove_money(userid,user,input_balance,option)
+    return redirect('/dashboard')
 
 
 
+# =====================================
+# GET REQUEST
+# ===================================== 
 
+@app.route('/fetch_expenses', methods=['GET'])
+def fetch_expenses():
+    user = request.cookies.get('username')
+    dbrequest = fetchdb(user)
+    result = dbrequest.expenses()
 
+    expense_list = []
+
+    for row in result:
+        expense_list.append({
+            "username": row[1],
+            "transaction_ID": row[2],
+            "transaction_name": row[3],
+            "amount": row[4]
+        })
+
+    return jsonify(expense_list)
+
+@app.route('/fetch_balance', methods = ['GET'])
+
+def fetch_balance():
+    user = request.cookies.get('username')
+    dbrequest = fetchdb(user)
+    balance_result = dbrequest.money()
+    transactions = []
+    for row in balance_result:
+        transactions.append(row[0])
+    total_balance = sum(transactions)
+    return_json = [{"money":total_balance}]
+    return jsonify(return_json)
 if __name__ == '__main__':
     app.run(debug=True, host = '0.0.0.0')
 
