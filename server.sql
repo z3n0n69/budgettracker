@@ -11,7 +11,7 @@ CREATE TABLE expenses (
     amount INT
 ); 
 
-CREATE TABLE MONEY(
+CREATE TABLE money(
     userID INT, 
     username VARCHAR(255), 
     balance INT
@@ -19,8 +19,11 @@ CREATE TABLE MONEY(
 
 CREATE TABLE scheduledpayments(
     userID INT, 
-    username VARCHAR(255), 
-    balance INT 
+    username VARCHAR(255),
+    scheduleid INT,
+    paymentname VARCHAR(255),
+    amount INT,
+    duedate DATE
 );
 
 CREATE TABLE sessiontracker(
@@ -32,4 +35,4 @@ CREATE TABLE sessiontracker(
 CREATE TABLE users(
     userID INT, 
     username VARCHAR(255)
-)
+); 

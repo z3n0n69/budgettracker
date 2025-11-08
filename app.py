@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, jsonify, redirect, make_response
 import mysql.connector 
-from waitress import serve 
+ 
 
 # =====================================
 # DATABASE CONFIGURATION
