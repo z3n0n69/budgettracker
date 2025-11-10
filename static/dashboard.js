@@ -48,7 +48,6 @@ function get_expenses() {
     .then(data => {
       const container = document.getElementById("expenseDisplay");
       container.innerHTML = ""; // clear old content
-
       data.forEach(item => {
         // create a new element for each expense
         const div = document.createElement("div");
@@ -67,9 +66,12 @@ function get_money() {
 
       data.forEach(item => {
         // change value in the current balance
-        container.innerHTML = item.money; 
+        container.innerHTML = "₱"+item.money; 
       });
     })
 }
 
 get_money(); 
+
+
+fetch("/database_handler")

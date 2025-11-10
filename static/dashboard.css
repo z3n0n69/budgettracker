@@ -135,4 +135,7 @@
 .remove-btn {
   background: #dc3545;
 }
-    
+
+.flex-it {
+  display:flex; 
+}

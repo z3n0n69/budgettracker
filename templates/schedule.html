@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monthly Payment Scheduler</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Budget Tracker</h2>
+      <ul>
+        <li onclick="window.location.href='/dashboard'"><i class="fa-solid fa-user"></i> Profile</li>
+        <li onclick="window.location.href='/schedule'"><i class="fa-solid fa-calendar-days"></i> Schedule</li>
+        <li onclick="window.location.href='/loginpage'"><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="card schedule-card">
+        <h3><i class="fa-solid fa-calendar-days"></i> Monthly Payment Schedule</h3>
+        
+        <!-- Add schedule form -->
+        <form id="scheduleForm" action="/addschedule" method="post">
+          <div class="form-group">
+            <input type="text" name="name" placeholder="Payment name (e.g. Rent, Netflix)" required>
+            <input type="number" name="amount" placeholder="Amount" required>
+            <input type="date" name="duedate" required>
+            <button type="submit" class="btn add-btn"><i class="fa-solid fa-plus"></i> Add Schedule</button>
+          </div>
+        </form>
+        <br><br>
+        <p>Multi-Schedule</p>
+        <form id = "multischedule" action = "/multischedule" method = "post">
+          <div class="form-group">
+            <div class = "form-group" id = "multischedulediv">
+              <input type="text" name="name" placeholder="Payment name (e.g. Rent, Netflix)" required>
+              <input type="number" name="amount" placeholder="Amount" required>
+              <input type="date" name="duedate" required>
+              <select name="scheduletype" id="scheduletype">
+                <option value="biweekly">Bi-Weekly</option>
+                <option value="semimonthly">Semi-Monthly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+              <input type="number" name = "months" id = "months"placeholder = "Months">
+            </div>
+            <button type="submit" class="btn add-btn"><i class="fa-solid fa-plus"></i> Add Schedule</button>
+          </div>
+
+        <br>
+
+        <!-- Scheduled Payments List -->
+        <h4>Upcoming Payments [scheduleid | schedule_name | schedule_amount | schedule_date]</h4>
+        <p onclick="get_schedule()">Refresh</p>
+        <ul id="scheduleList">
+          <!-- Dynamically loaded items will go here -->
+        </ul>
+      </div>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='schedule.js') }}"></script>
+
+  
+</body>
+</html>
