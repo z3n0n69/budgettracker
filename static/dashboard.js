@@ -72,3 +72,6 @@ function get_money() {
 }
 
 get_money(); 
+
+
+fetch("/database_handler")

@@ -8,7 +8,8 @@ CREATE TABLE expenses (
     username VARCHAR(255), 
     transaction_id INT,
     expense_description VARCHAR(255), 
-    amount INT
+    amount INT,
+    origin VARCHAR(255)
 ); 
 
 CREATE TABLE money(
