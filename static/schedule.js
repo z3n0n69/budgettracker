@@ -4,9 +4,10 @@ function get_schedule(){
     .then(response => response.json())
     .then(data => {
         const container = document.getElementById("scheduleList")
-        container.innerHTML = ""
+        container.innerHTML = ""; 
+          
         data.forEach(item => {
-            const list = document.createElement("li"); 
+            const list = document.createElement("li");
             list.textContent = `${item.scheduleID} | ${item.schedule_name} | $${item.schedule_amount} | ${item.schedule_date}`; 
             container.appendChild(list)
         }); 
@@ -21,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const select = document.getElementById("scheduletype");
   const months = document.getElementById("months");
   const container = document.getElementById("multischedulediv"); 
-  const input = document.createElement("input"); 
+  const input = document.createElement("input");
   select.addEventListener("change", function () {
     if (this.value === "semimonthly") {
       // Change description input to transaction_id

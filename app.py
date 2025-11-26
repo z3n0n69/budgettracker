@@ -15,12 +15,19 @@ date_today = date.today()
 # =====================================
 
 def dbconnection():
+    """Create and return a MySQL database connection.
+
+    Returns:
+        mysql.connector.connection.MySQLConnection or None: Established DB connection
+        object on success, or None when a connection error occurs. Errors are
+        printed to stdout for debugging.
+    """
     try:
         mydb = mysql.connector.connect(
             host = "localhost", 
             user = "root",
             password = "root", 
-            database = "testbudgettracker",
+            database = "budgettracker",
             connection_timeout = 30,
             auth_plugin = 'mysql_native_password'
         )
@@ -40,10 +47,22 @@ def dbconnection():
 # =====================================
 
 class dbfunctions:
+    """Collection of database-modifying functions tied to a username.
+
+    Each method opens a short-lived DB connection, performs its queries,
+    and commits when it mutates state. The instance keeps the `username`
+    which is used for multi-table inserts and lookups.
+    """
     def __init__(self, username):
         self.username = username
     
     def createuser(self):
+        """Create a new user row and initialize related tables.
+
+        Inserts into `users`, `sessiontracker`, and `money` if the provided
+        username does not exist. Returns a list [username, userID] on success
+        or the string "existing user" when the username is already present.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         dbcursor.execute("SELECT MAX(userID) FROM users")
@@ -74,6 +93,11 @@ class dbfunctions:
             return "existing user"
     
     def loginvalidation(self):
+        """Validate whether a username exists in the `users` table.
+
+        Returns the user row tuple when found, or the string "None" when
+        the username is not present. Also prints the result for debugging.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         dbcursor.execute(f"SELECT * FROM users WHERE username = %s", (self.username, ))
@@ -85,6 +109,12 @@ class dbfunctions:
             return result
     
     def add_expenses(self,  userID, description, amount,origin): 
+        """Add a new expense row for the given user.
+
+        Auto-increments `transaction_id` per-user, inserts the expense
+        row (userID, username, transaction_id, expense_description, amount,
+        origin) and commits the change.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         dbcursor.execute(f"SELECT MAX(transaction_id) FROM expenses WHERE userID = %s", (userID, ))
@@ -99,6 +129,11 @@ class dbfunctions:
             dbconn.commit() 
 
     def remove_expenses(self, userID, transactionid):
+        """Remove an expense by its transaction id.
+
+        Returns "deleted" on successful removal or "invalid" if the
+        transaction id does not exist.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         dbcursor.execute(f"SELECT userID FROM expenses WHERE transaction_id = %s", (int(transactionid), ))
@@ -110,6 +145,13 @@ class dbfunctions:
             dbconn.commit()
             return "deleted"
     def addremove_money(self, userID, username, balance, option):
+        """Insert a money transaction row for adding or removing balance.
+
+        When `option` is "add" the provided `balance` is inserted as
+        positive. When `option` is "remove" the inserted balance is
+        negated before insertion. Each call inserts a new row into
+        the `money` table and commits.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         if option == "add":
@@ -121,6 +163,11 @@ class dbfunctions:
             dbconn.commit()
     
     def schedulepayment(self, userID, paymentname, amount , duedate):
+        """Schedule a single payment row for a user.
+
+        Determines a schedule id for the user and inserts a scheduled
+        payment record with the provided paymentname, amount and duedate.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         dbcursor.execute(f"SELECT scheduleid FROM scheduledpayments WHERE username = %s", (self.username, ))
@@ -135,6 +182,13 @@ class dbfunctions:
             dbconn.commit()
     
     def multischedule(self, userID, paymentname, amount, duedate, scheduletype, months,enddate):
+        """Create multiple scheduled payments according to a schedule type.
+
+        Supported `scheduletype` values: "biweekly", "semimonthly",
+        and "monthly". This function computes repeated due dates for the
+        specified number of `months` and inserts them into
+        `scheduledpayments`. It prints debug information as it runs.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         print("[MULTI SCHEDULE FUNCTION INITIALIZED]")
@@ -226,7 +280,7 @@ class dbfunctions:
                     scheduleid = scheduleid + 1
             
             elif scheduletype == "monthly":
-                startdate = datetime.strptime(duedate, "%Y-%m-%d").date
+                startdate = datetime.strptime(duedate, "%Y-%m-%d").date()
                 start_day = startdate.day
                 for i in range(months):
                     processed_date = startdate
@@ -240,9 +294,19 @@ class dbfunctions:
 #GET REQUEST
 
 class fetchdb:
+    """Read-only fetch helpers for user-related data.
+
+    Methods return fetched rows from the database for expenses, money,
+    expense amounts or scheduled payments associated with the username.
+    """
     def __init__(self, username):
         self.username = username
     def expenses(self):
+        """Return all expense rows for the instance username.
+
+        The method returns a list of tuples as retrieved by
+        `cursor.fetchall()`.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         dbcursor.execute(f"SELECT * FROM expenses WHERE username = %s", (self.username, ))
@@ -251,6 +315,11 @@ class fetchdb:
         return fetch_result
 
     def money(self):
+        """Return all money transaction balances for the user.
+
+        Returns rows with a single `balance` column each. The caller often
+        sums these rows to compute current total balance.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         dbcursor.execute(f"SELECT balance FROM money WHERE username = %s", (self.username,)) 
@@ -258,6 +327,10 @@ class fetchdb:
         return fetch_result   
 
     def expenseamount(self):
+        """Return the `amount` column for all expenses for the user.
+
+        Useful for calculating total expenses by summing the returned rows.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         dbcursor.execute(f"SELECT amount FROM expenses WHERE username = %s", (self.username,))
@@ -265,6 +338,11 @@ class fetchdb:
         return fetch_result
 
     def schedule(self):
+        """Fetch all scheduled payments for the user.
+
+        Returns a list of scheduled payment rows. Prints today's date for
+        debugging and returns the DB rows for further processing.
+        """
         dbconn = dbconnection()
         dbcursor = dbconn.cursor(buffered = True)
         dbcursor.execute(f"SELECT * FROM scheduledpayments WHERE username = %s", (self.username, ))

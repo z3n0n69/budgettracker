@@ -1,6 +1,6 @@
-CREATE DATABASE testbudgettracker; 
+CREATE DATABASE budgettracker; 
 
-USE testbudgettracker;
+USE budgettracker;
 
 
 CREATE TABLE expenses (
